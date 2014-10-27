@@ -6,16 +6,23 @@
 #  Created by Gregory Hill on 2/27/13.
 #  Copyright (c) 2013 Gregory Hill. All rights reserved.
 
+#update storyboard string   ./UpdateStoryboardString ../Express
+#update xib string          ./UpdateStoryboardString ../Express xib
+
+
 clear
 
 baseDir=$1
-
+Ext=$2
 baseDirLength=$(echo ${#baseDir})
 
 if [ $baseDirLength -eq 0 ]; then
 	echo "cls.sh <rootPath>"
 else
-	storyboardExt=".storyboard"
+    storyboardExt=".storyboard"
+    if [ -n $Ext ]; then
+        storyboardExt=".$Ext"
+    fi
 	stringsExt=".strings"
 	newStringsExt=".strings.new"
 	oldStringsExt=".strings.old"
@@ -32,6 +39,7 @@ else
 	# Find storyboard file full path inside project folder
 	for storyboardPath in `find . -name "*$storyboardExt" -print`
 	do
+   
 		# Get Base strings file full path
 		baseStringsPath=$(echo "$storyboardPath" | sed "s/$storyboardExt/$stringsExt/")
 
@@ -53,7 +61,7 @@ else
 		fi
 
 		# Create strings file only when storyboard file newer
-		if $isNewStringsFile || find $storyboardPath -prune -newer $baseStringsPath -print | grep -q .; then
+#		if $isNewStringsFile || find $storyboardPath -prune -newer $baseStringsPath -print | grep -q .; then
 			echo "$storyboardPath is modified; update $baseStringsPath"
 
 			# Get storyboard file name and folder
@@ -95,9 +103,9 @@ else
 					fi
 				fi
 			done
-		else
-			echo "$storyboardPath file not modified."
-		fi
+#else
+#			echo "$storyboardPath file not modified."
+#		fi
 	done
 fi
 

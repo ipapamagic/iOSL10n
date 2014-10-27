@@ -97,10 +97,10 @@ else
 					echo "key Exists: $finalKey"
 				fi
 
-			done < "../../output.txt"
+			done < "../output.txt"
 
 			# change directory back to baseDir
-			cd ../..
+			cd ..
 
 			echo "cd back up ..:"
 			pwd
