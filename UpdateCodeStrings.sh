@@ -39,9 +39,9 @@ else
 	pwd
 
 	find . -type f -name "*.m*" -print > listOfFiles.txt
-
-	cat listOfFiles.txt |tr '\n' '\0' |xargs -0 grep -o "NSLocalizedString(@\"[[:alnum:]]*\", @\"[a-zA-Z0-9 !@#\$%\^&\*()\.,-\+']*\")" > output.txt
-
+   # cat ~/ok.txt | egrep -i ‘NSLocalizedString\(\s*@\s*”.*?”\s*,\s*@“.*?”\)’
+#	cat listOfFiles.txt |tr '\n' '\0' |xargs -0 grep -o "NSLocalizedString(@\"[[:graph:] ]*\" *, *@\"[[:graph:] ]*\")" > output.txt
+    cat listOfFiles.txt |tr '\n' '\0' |xargs -0 egrep -o 'NSLocalizedString\(\s*@".*?"\s*,\s*@".*?"\)' > output.txt
 	# Next, get all locale strings folders.  If Localizable.strings found, append to existing file; otherwise, create a new one.
 
 	for localeStringsDir in `find . -name "*$localeDirExt" -print`
@@ -74,9 +74,11 @@ else
 
 			while read LINE
 			do
-				foundLocalizedString=$(echo "$LINE" | grep -o "NSLocalizedString(@\"[[:alnum:]]*\", @\"[a-zA-Z0-9 !@#\$%\^&\*()\.,-\+']*\")")
+#				foundLocalizedString=$(echo "$LINE" | grep -o "NSLocalizedString(@\"[[:alnum:]]*\", @\"[a-zA-Z0-9 !@#\$%\^&\*()\.,-\+']*\")")
+#				foundKey=$(echo "$foundLocalizedString" | grep -o "(@\"[[:alnum:]]*\"")
+                foundLocalizedString=$(echo "$LINE" | egrep -o 'NSLocalizedString\(\s*@".*?"\s*,\s*@".*?"\)')
+				foundKey=$(echo "$foundLocalizedString" | egrep -o '\(@".*?"')
 
-				foundKey=$(echo "$foundLocalizedString" | grep -o "(@\"[[:alnum:]]*\"")
 				keyStart="\""
 				finalKey=$(echo "$foundKey" | grep -o "$keyStart.*")
 
@@ -85,7 +87,7 @@ else
 				if [ $? -eq 1 ]; then
 					echo "****** key is New: $finalKey"
 
-					foundComment=$(echo "$foundLocalizedString" | grep -o "@\"[a-zA-Z0-9 !@#\$%\^&\*()\.,-\+']*\")")
+					foundComment=$(echo "$foundLocalizedString" | grep -o ",\s*@\".*\")")
 					commentStart="\""
 					intermediateComment=$(echo "$foundComment" | grep -o "$commentStart.*")
 

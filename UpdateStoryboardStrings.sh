@@ -20,7 +20,8 @@ if [ $baseDirLength -eq 0 ]; then
 	echo "cls.sh <rootPath>"
 else
     storyboardExt=".storyboard"
-    if [ -n $Ext ]; then
+    size=${#Ext}
+    if [ $size -ne 0 ]; then
         storyboardExt=".$Ext"
     fi
 	stringsExt=".strings"
@@ -33,7 +34,7 @@ else
 	echo "********************************************"
 	echo "Starting 'Create Locale Strings'"
 	echo "Moving to dir: $baseDir"
-
+    echo "Looking ext: $Ext"
 	cd $baseDir
 
 	# Find storyboard file full path inside project folder
@@ -61,7 +62,7 @@ else
 		fi
 
 		# Create strings file only when storyboard file newer
-#		if $isNewStringsFile || find $storyboardPath -prune -newer $baseStringsPath -print | grep -q .; then
+		if $isNewStringsFile || find $storyboardPath -prune -newer $baseStringsPath -print | grep -q .; then
 			echo "$storyboardPath is modified; update $baseStringsPath"
 
 			# Get storyboard file name and folder
@@ -71,7 +72,7 @@ else
 			# Get New Base strings file full path and strings file name
 			newBaseStringsPath=$(echo "$storyboardPath" | sed "s/$storyboardExt/$newStringsExt/")
 			stringsFile=$(basename "$baseStringsPath")
-
+            echo "excute ibtool export"
 			ibtool --export-strings-file $newBaseStringsPath $storyboardPath
 
 			iconv -f UTF-16 -t UTF-8 $newBaseStringsPath > $baseStringsPath
@@ -103,9 +104,9 @@ else
 					fi
 				fi
 			done
-#else
-#			echo "$storyboardPath file not modified."
-#		fi
+        else
+			echo "$storyboardPath file not modified."
+		fi
 	done
 fi
 
