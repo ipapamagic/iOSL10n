@@ -43,7 +43,7 @@ else
     cat listOfFiles.txt |tr '\n' '\0' |xargs -0 egrep -o 'NSLocalizedString\(\s*@\".+?\"\s*,\s*@\".*?\"\s*\)' > output.txt
     echo "*****Swift*****" >> output.txt
 	find . -type f -name "*.swift" -print >> listOfFiles.txt
-    cat listOfFiles.txt |tr '\n' '\0' |xargs -0 egrep -o 'NSLocalizedString\(\s*\".+?\"\s*,\s*tableName:.+?,\s*bundle:.+?,\s*value:\s*\".*?\"\s*,\s*comment:\s*\".*?\"\s*\)' >> output.txt
+    cat listOfFiles.txt |tr '\n' '\0' |xargs -0 egrep -o 'NSLocalizedString\(\s*\".+?\"\s*,(\s*tableName:.+?,)?(\s*bundle:.+?,)?(\s*value:\s*\".*?\"\s*,)?\s*comment:\s*\".*?\"\s*\)' >> output.txt
 
 	# Next, get all locale strings folders.  If Localizable.strings found, append to existing file; otherwise, create a new one.
 
@@ -102,7 +102,7 @@ else
                         commentStart="\""
                         intermediateComment=$(echo "$foundComment" | egrep -o "$commentStart.*")
 
-                        finalComment=$(echo "$intermediateComment" | sed "s/)//")
+                        finalComment=$(echo "$intermediateComment" | sed "s/\"\s*)/\"/")
 
                         echo "/* $finalComment */" >> $stringsFile
                         echo -e "$finalKey = $finalComment;\n" >> $stringsFile
@@ -110,7 +110,7 @@ else
                         echo "key Exists: $finalKey"
                     fi
                 else
-                    foundLocalizedString=$(echo "$LINE" | egrep -o 'NSLocalizedString\(\s*\".+?\"\s*,\s*tableName:.+?,\s*bundle:.+?,\s*value:\s*\".*?\"\s*,\s*comment:\s*\".*?\"\s*\)')
+                    foundLocalizedString=$(echo "$LINE" | egrep -o 'NSLocalizedString\(\s*\".+?\"\s*,(\s*tableName:.+?,)?(\s*bundle:.+?,)?(\s*value:\s*\".*?\"\s*,)?\s*comment:\s*\".*?\"\s*\)')
                     foundKey=$( echo "$foundLocalizedString" | egrep -o '\(\s*\".+?\"' )
                     keyStart="\""
                     finalKey=$(echo "$foundKey" | grep -o "$keyStart.*")
@@ -125,7 +125,7 @@ else
                         commentStart="\""
                         intermediateComment=$(echo "$foundComment" | egrep -o "$commentStart.*")
 
-                        finalComment=$(echo "$intermediateComment" | sed "s/)//")
+                        finalComment=$(echo "$intermediateComment" | sed "s/\"\s*)/\"/")
 
                         echo "/* $finalComment */" >> $stringsFile
                         echo -e "$finalKey = $finalComment;\n" >> $stringsFile
